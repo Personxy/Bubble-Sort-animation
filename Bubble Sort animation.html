@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冒泡排序动态展示</title>
+  <style>
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      top: 100px;
+      height: 500px
+    }
+
+    .listyle {
+      width: 30px;
+      background-color: skyblue;
+      position: absolute;
+      bottom: 0;
+      transition: left 1s ease 0s;
+      text-align: center;
+    }
+
+
+    .bc {
+      background-color: coral;
+
+    }
+
+    #startsort {
+      margin-top: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="title">第0次排序</h1>
+  <div class="barchart ">
+    <ul id="ulbox">
+    </ul>
+  </div>
+  <p></p>
+  <button id="startsort"> 开始排序</button>
+
+
+  <script>
+
+    function randomarr (arrlength, arrRange)
+    {
+      // arrlength数组长度,
+      //arrRange 数组范围 是个整数
+      let arr = []
+      for (let index = 0; index < arrlength - 1; index++) {
+        arr[index] = parseInt(Math.random() * arrRange)
+        arr.push(arr[index])
+      }
+      return arr
+    }
+    async function sort (arr)
+    {
+
+      for (let i = 0; i <= arr.length - 1; i++) {
+        let title = document.querySelector('#title')
+        title.innerHTML = `第${i + 1}次排序`
+        for (let j = 0; j <= arr.length - i - 1; j++) {
+          // 如果需要交换 则当前两个柱状颜色变化 并且产生交换动画
+          // 给要交换的添加背景颜色
+          ulbox.children[j].classList.add('bc');
+          if (ulbox.children[j + 1]) {
+            ulbox.children[j + 1].classList.add('bc');
+          }
+          await sleep(1000)
+          if (arr[j] > arr[j + 1]) {
+            // 交换
+            let temp = ulbox.children[j].style.left
+            ulbox.children[j].style.left = ulbox.children[j + 1].style.left
+            ulbox.children[j + 1].style.left = temp;
+            await sleep(1000)
+            // dom也要交换
+            ulbox.insertBefore(ulbox.children[j + 1], ulbox.children[j])
+            ulbox = document.querySelector('#ulbox')
+            // 数组交换
+            let t = arr[j];
+            arr[j] = arr[j + 1];
+            arr[j + 1] = t;
+            await sleep(1000)
+
+          }
+          // 交换完毕去除背景色
+          ulbox.children[j].classList.remove('bc');
+          if (ulbox.children[j + 1]) {
+            ulbox.children[j + 1].classList.remove('bc');
+          }
+
+        }
+      }
+      console.log(arr);
+    }
+    function sleep (time)
+    {
+      return new Promise((resolve) =>
+      {
+        setTimeout(() =>
+        {
+          resolve()
+        }, time);
+      })
+    }
+    let arrRange = 100;
+    let maxheight = 500
+    let arr = randomarr(30, arrRange)
+    let sortstart = document.querySelector('#startsort')
+    let ulbox = document.querySelector('#ulbox')
+    for (let index = 0; index < arr.length; index++) {
+      ulbox.innerHTML += `<li class="listyle" style="height:${arr[index] / arrRange * maxheight}px; left:${(index + 1) * 40}px">${arr[index]}</li>
+    `
+    }
+    sortstart.addEventListener('click', function ()
+    {
+      sort(arr)
+    })
+  </script>
+</body>
+
+</html>
